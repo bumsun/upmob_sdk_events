@@ -1,0 +1,3 @@
+include ':UpMobSDKEvents'
+include ':app'
+rootProject.name = "UpMobSDKEvents"
