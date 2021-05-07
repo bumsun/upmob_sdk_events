@@ -29,18 +29,17 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class UpMob {
     static private String referrerUrl;
-    static public String order_id;
     static public String google_user_id;
 
     static public Boolean enableCrashApp = false;
+    private static String order_id;
 
-    static public void init(Context ctx, String orderId, Boolean enableCrashApp) {
+    static public void init(Context ctx, Boolean enableCrashApp) {
         UpMob.enableCrashApp = enableCrashApp;
-        UpMob.init(ctx, orderId);
+        UpMob.init(ctx);
     }
 
-    static public void init(Context ctx, String orderId) {
-        order_id = orderId;
+    static public void init(Context ctx) {
         initCatchCrashes();
         initGetReferParams(ctx);
     }
@@ -130,7 +129,6 @@ public class UpMob {
 
 
     static public void sendEvent(String task_id) {
-        String order_id = "";
 
         if(order_id != null && google_user_id != null && order_id != null && task_id != null){
             API.performSDKTask(new Request.RequestCallBack() {

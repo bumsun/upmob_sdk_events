@@ -13,7 +13,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        UpMob.init(getApplicationContext(),"12345");
+        UpMob.init(getApplicationContext());
 
         Handler handler = new Handler(getMainLooper());
         handler.postDelayed(new Runnable() {
