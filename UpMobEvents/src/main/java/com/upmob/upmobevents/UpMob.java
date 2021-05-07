@@ -1,12 +1,149 @@
 package com.upmob.upmobevents;
 
-public class UpMob {
-    private String test = "test value";
+import android.content.Context;
+import android.os.Looper;
+import android.os.RemoteException;
+import android.util.Log;
+import android.widget.Toast;
 
-    public UpMob() {
+import com.android.installreferrer.api.InstallReferrerClient;
+import com.android.installreferrer.api.InstallReferrerStateListener;
+import com.android.installreferrer.api.ReferrerDetails;
+
+import org.json.JSONObject;
+
+import java.io.BufferedWriter;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.net.ssl.HttpsURLConnection;
+
+//Протестить либу таким образом:
+//https://stackoverflow.com/a/60342463
+
+public class UpMob {
+    static private String referrerUrl;
+    static public String order_id;
+    static public String google_user_id;
+
+    static public Boolean enableCrashApp = false;
+
+    static public void init(Context ctx, String orderId, Boolean enableCrashApp) {
+        UpMob.enableCrashApp = enableCrashApp;
+        UpMob.init(ctx, orderId);
     }
 
-    public String getTest() {
-        return test;
+    static public void init(Context ctx, String orderId) {
+        order_id = orderId;
+        initCatchCrashes();
+        initGetReferParams(ctx);
+    }
+
+    private static void initGetReferParams(Context ctx) {
+        InstallReferrerClient referrerClient;
+
+        referrerClient = InstallReferrerClient.newBuilder(ctx).build();
+        referrerClient.startConnection(new InstallReferrerStateListener() {
+            @Override
+            public void onInstallReferrerSetupFinished(int responseCode) {
+                switch (responseCode) {
+                    case InstallReferrerClient.InstallReferrerResponse.OK:
+                        // Connection established.
+                        ReferrerDetails response = null;
+                        try {
+                            response = referrerClient.getInstallReferrer();
+                            referrerUrl = response.getInstallReferrer();
+                            long referrerClickTime = response.getReferrerClickTimestampSeconds();
+                            long appInstallTime = response.getInstallBeginTimestampSeconds();
+                            boolean instantExperienceLaunched = response.getGooglePlayInstantParam();
+
+                            L.d("referrerUrl:"+referrerUrl);
+                            String[] paramsList = referrerUrl.split("&");
+                            for(String param: paramsList) {
+                                String key = param.split("=")[0];
+                                String value = param.split("=")[1];
+                                if(key.equals("google_user_id")){
+                                    google_user_id = value;
+                                }
+                                if(key.equals("order_id")){
+                                    order_id = value;
+                                }
+                            }
+
+                            L.d("google_user_id:" + google_user_id);
+                            L.d("order_id:" + order_id);
+
+                            L.d("referrerClickTime:" + referrerClickTime);
+                            L.d("appInstallTime:" + appInstallTime);
+                            L.d("instantExperienceLaunched:" + instantExperienceLaunched);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+
+                        break;
+                    case InstallReferrerClient.InstallReferrerResponse.FEATURE_NOT_SUPPORTED:
+                        // API not available on the current Play Store app.
+                        break;
+                    case InstallReferrerClient.InstallReferrerResponse.SERVICE_UNAVAILABLE:
+                        // Connection couldn't be established.
+                        break;
+                }
+            }
+
+            @Override
+            public void onInstallReferrerServiceDisconnected() {
+                // Try to restart the connection on the next request to
+                // Google Play by calling the startConnection() method.
+            }
+        });
+    }
+
+    private static void initCatchCrashes() {
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread paramThread, Throwable paramThrowable) {
+
+                String errorStack = Log.getStackTraceString(paramThrowable);
+                API.crashSDKApp(new Request.RequestCallBack() {
+                    @Override
+                    public void success(JSONObject res) {
+
+                    }
+
+                    @Override
+                    public void error(String error) {
+
+                    }
+                },order_id,google_user_id,errorStack);
+                if(enableCrashApp){
+                    System.exit(2);
+                }
+            }
+        });
+    }
+
+
+    static public void sendEvent(String task_id) {
+        String order_id = "";
+
+        if(order_id != null && google_user_id != null && order_id != null && task_id != null){
+            API.performSDKTask(new Request.RequestCallBack() {
+                @Override
+                public void success(JSONObject res) {
+                    L.d("res = " + res.toString());
+                }
+
+                @Override
+                public void error(String error) {
+                    L.d("error = " + error);
+                }
+            },order_id,google_user_id,task_id);
+        }
     }
 }
