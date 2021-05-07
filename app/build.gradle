@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
 //        applicationId "com.upmob.upmobsdk"
-        applicationId "com.mountaindehead.timelapsproject"
+//        applicationId "com.mountaindehead.timelapsproject"
 
         minSdkVersion 16
         targetSdkVersion 30
