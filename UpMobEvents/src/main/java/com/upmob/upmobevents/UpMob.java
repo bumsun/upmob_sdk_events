@@ -1,6 +1,7 @@
 package com.upmob.upmobevents;
 
 import android.content.Context;
+import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
 import android.util.Log;
@@ -40,11 +41,13 @@ public class UpMob {
     }
 
     static public void init(Context ctx) {
-        initCatchCrashes();
+
         initGetReferParams(ctx);
     }
 
     private static void initGetReferParams(Context ctx) {
+        Handler handler = new Handler(Looper.getMainLooper());
+
         InstallReferrerClient referrerClient;
 
         referrerClient = InstallReferrerClient.newBuilder(ctx).build();
@@ -69,11 +72,19 @@ public class UpMob {
                                 String value = param.split("=")[1];
                                 if(key.equals("google_user_id")){
                                     google_user_id = value;
+                                    handler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            initCatchCrashes();
+                                        }
+                                    });
                                 }
                                 if(key.equals("order_id")){
                                     order_id = value;
                                 }
                             }
+
+
 
                             L.d("google_user_id:" + google_user_id);
                             L.d("order_id:" + order_id);
@@ -121,7 +132,7 @@ public class UpMob {
                     }
                 },order_id,google_user_id,errorStack);
                 if(enableCrashApp){
-                    System.exit(2);
+                    System.exit(1);
                 }
             }
         });
