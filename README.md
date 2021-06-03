@@ -17,7 +17,7 @@ Then, add the library to your module build.gradle
 ```
 dependencies {
     implementation "com.android.installreferrer:installreferrer:2.2"
-    implementation 'com.github.bumsun:upmob_sdk_events:v1.8'
+    implementation 'com.github.bumsun:upmob_sdk_events:v2.0'
 }
 ```
 
