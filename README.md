@@ -24,7 +24,7 @@ dependencies {
 ### Инициализация
 
 ```
-# Вызвать при запуске приложения
+# Вызвать в методе onCreate главной Activity (Которая запускается первой в приложении)
 UpMob.init(getApplicationContext());
 ```
 
