@@ -1,6 +1,8 @@
 package com.upmob.upmobevents;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
@@ -35,22 +37,34 @@ public class UpMob {
     static public Boolean enableCrashApp = false;
     private static String order_id;
 
-    static public void init(Context ctx, Boolean enableCrashApp) {
+    static public void init(Activity ctx, Boolean enableCrashApp) {
         UpMob.enableCrashApp = enableCrashApp;
         UpMob.init(ctx);
     }
 
-    static public void init(Context ctx) {
-
-        initGetReferParams(ctx);
+    static public void init(Activity act) {
+        initGetIntentParams(act);
+        initGetReferParams(act);
+    }
+    private static void initGetIntentParams(Activity act) {
+        Intent intent = act.getIntent();
+        L.d("intent.hasExtra:"+intent.hasExtra("google_user_id"));
+        if (intent.hasExtra("google_user_id")) {
+            google_user_id = intent.getStringExtra("google_user_id");
+            L.d("initGetIntentParams google_user_id:"+google_user_id);
+        }
+        if (intent.hasExtra("order_id")) {
+            order_id = intent.getStringExtra("order_id");
+            L.d("initGetIntentParams order_id:"+order_id);
+        }
     }
 
-    private static void initGetReferParams(Context ctx) {
+    private static void initGetReferParams(Activity act) {
         Handler handler = new Handler(Looper.getMainLooper());
 
         InstallReferrerClient referrerClient;
 
-        referrerClient = InstallReferrerClient.newBuilder(ctx).build();
+        referrerClient = InstallReferrerClient.newBuilder(act).build();
         referrerClient.startConnection(new InstallReferrerStateListener() {
             @Override
             public void onInstallReferrerSetupFinished(int responseCode) {
@@ -141,7 +155,7 @@ public class UpMob {
 
     static public void sendEvent(String task_id) {
 
-        if(order_id != null && google_user_id != null && order_id != null && task_id != null){
+        if(order_id != null && google_user_id != null && task_id != null){
             API.performSDKTask(new Request.RequestCallBack() {
                 @Override
                 public void success(JSONObject res) {
