@@ -25,7 +25,7 @@ dependencies {
 
 ```
 # Вызвать в методе onCreate главной Activity (Которая запускается первой в приложении)
-UpMob.init(getApplicationContext());
+UpMob.init(getActivity());
 ```
 
 ### Вызвать в момент когда задача выполнена
