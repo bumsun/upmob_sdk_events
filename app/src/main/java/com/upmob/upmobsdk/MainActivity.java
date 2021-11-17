@@ -2,6 +2,7 @@ package com.upmob.upmobsdk;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -18,8 +19,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        UpMob.init(this);
+//        Intent intent = new Intent(this, MainActivity2.class);
+//        startActivity(intent);
+        try {
+            UpMob.init(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 //        setContentView(null);
 
@@ -39,5 +45,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 //        UpMob.init(this);
+        Intent sendIntent = getPackageManager().getLaunchIntentForPackage("ru.dear.diary");
+        sendIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        sendIntent.putExtra("google_user_id", "google_user_id8");
+        sendIntent.putExtra("order_id", "order_id1");
+        startActivity(sendIntent);
     }
 }

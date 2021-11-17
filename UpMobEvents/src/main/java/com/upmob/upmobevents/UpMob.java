@@ -24,6 +24,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -37,17 +38,36 @@ public class UpMob {
     static public Boolean enableCrashApp = false;
     private static String order_id;
 
-    static public void init(Activity ctx, Boolean enableCrashApp) {
+    static public void init(Activity ctx, Boolean enableCrashApp) throws Exception {
         UpMob.enableCrashApp = enableCrashApp;
         UpMob.init(ctx);
     }
 
-    static public void init(Activity act) {
+    static public void init(Activity act) throws Exception {
         initGetIntentParams(act);
         initGetReferParams(act);
     }
-    private static void initGetIntentParams(Activity act) {
+    private static void initGetIntentParams(Activity act) throws Exception {
         Intent intent = act.getIntent();
+
+        String action = intent.getAction();
+        Set<String> categories = intent.getCategories();
+        L.d("categories:"+categories);
+        Boolean isLauncher = false;
+        if(categories != null){
+            for (String category:categories) {
+                L.d("category: "+category);
+                if(category.toUpperCase().contains("LAUNCHER")){
+                    isLauncher = true;
+                }
+            }
+        }
+
+
+        if(isLauncher == false){
+            throw new Exception("Your screen hasn't category MAIN or LAUNCHER. You need to move UpMob.init() to another activity.");
+        }
+
         L.d("intent.hasExtra:"+intent.hasExtra("google_user_id"));
         if (intent.hasExtra("google_user_id")) {
             google_user_id = intent.getStringExtra("google_user_id");
