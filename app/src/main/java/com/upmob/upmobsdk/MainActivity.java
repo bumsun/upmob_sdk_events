@@ -21,11 +21,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 //        Intent intent = new Intent(this, MainActivity2.class);
 //        startActivity(intent);
-        try {
-            UpMob.init(this);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        UpMob.init(this);
 
 //        setContentView(null);
 

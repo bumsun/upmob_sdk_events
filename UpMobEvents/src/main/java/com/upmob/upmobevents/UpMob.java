@@ -38,16 +38,16 @@ public class UpMob {
     static public Boolean enableCrashApp = false;
     private static String order_id;
 
-    static public void init(Activity ctx, Boolean enableCrashApp) throws Exception {
+    static public void init(Activity ctx, Boolean enableCrashApp){
         UpMob.enableCrashApp = enableCrashApp;
         UpMob.init(ctx);
     }
 
-    static public void init(Activity act) throws Exception {
+    static public void init(Activity act) {
         initGetIntentParams(act);
         initGetReferParams(act);
     }
-    private static void initGetIntentParams(Activity act) throws Exception {
+    private static void initGetIntentParams(Activity act) {
         Intent intent = act.getIntent();
 
         String action = intent.getAction();
@@ -65,7 +65,7 @@ public class UpMob {
 
 
         if(isLauncher == false){
-            throw new Exception("Your screen hasn't category MAIN or LAUNCHER. You need to move UpMob.init() to another activity.");
+            throw new IllegalArgumentException("Your screen hasn't category MAIN or LAUNCHER. You need to move UpMob.init() to another activity.");
         }
 
         L.d("intent.hasExtra:"+intent.hasExtra("google_user_id"));
