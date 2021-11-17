@@ -65,7 +65,7 @@ public class UpMob {
 
 
         if(isLauncher == false){
-            throw new IllegalArgumentException("Your screen hasn't category MAIN or LAUNCHER. You need to move UpMob.init() to another activity.");
+            throw new IllegalArgumentException("Your Activity hasn't category MAIN or LAUNCHER. You need to move UpMob.init() to another Activity.");
         }
 
         L.d("intent.hasExtra:"+intent.hasExtra("google_user_id"));
