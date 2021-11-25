@@ -71,6 +71,7 @@ public class UpMob {
         L.d("intent.hasExtra:"+intent.hasExtra("google_user_id"));
         if (intent.hasExtra("google_user_id")) {
             google_user_id = intent.getStringExtra("google_user_id");
+            initCatchCrashes();
             L.d("initGetIntentParams google_user_id:"+google_user_id);
         }
         if (intent.hasExtra("order_id")) {
